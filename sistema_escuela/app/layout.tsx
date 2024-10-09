@@ -10,6 +10,10 @@ export default function RootLayout({children}: {children: React.ReactNode; }) {
 			<body className={"min-h-screen flex flex-col justify-between bg-base-100 " + inter.className}>
 				<Header />
 				{children}
+
+				<footer className="footer-center">
+					<h6>Escuela X - Sistema interno</h6>
+				</footer>
 			</body>
 		</html>
 	);

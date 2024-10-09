@@ -20,12 +20,15 @@ export function Header() {
 			userClass = "Alumno";
 			break;
 		default:
-			userClass = userType;
+			userClass = "Usted no ha iniciado sesión (" + userType + ")";
 	}
 
 	return (
-		<header style={{paddingBottom: "0.5rem", borderBottom: "2px solid black"}}>
-			<h1>Escuela X - {userClass}</h1>
+		<header className="pb-2 border-b border-black">
+			<section className="mt-4 ml-4">
+				<h1>Escuela X</h1>
+				<h3>{userClass}</h3>
+			</section>
 		</header>
 	);
 }
