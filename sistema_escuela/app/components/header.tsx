@@ -3,7 +3,9 @@ import { cookies } from 'next/headers';
 export function Header() {
 	const userCookies = cookies();
 	// console.log(userCookies);
-	const userType = userCookies.get("clase-usuario").value;
+	const userType = (userCookies.get("clase-usuario") == undefined)
+			? ""
+			: userCookies.get("clase-usuario").value;
 	let userClass = "Usted no ha iniciado sesión";
 
 	 switch(userType) {
@@ -20,7 +22,7 @@ export function Header() {
 			userClass = "Alumno";
 			break;
 		default:
-			userClass = "Usted no ha iniciado sesión (" + userType + ")";
+			userClass = " - Usted no ha iniciado sesión - " + userType;
 	}
 
 	return (
