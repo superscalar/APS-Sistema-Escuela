@@ -19,6 +19,8 @@ export function Header() {
 		case 'alumno':
 			userClass = "Alumno";
 			break;
+		default:
+			userClass = userType;
 	}
 
 	return (

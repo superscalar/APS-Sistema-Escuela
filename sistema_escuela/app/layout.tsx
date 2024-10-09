@@ -1,9 +1,13 @@
+import "./globals.css";
+import { Inter } from "next/font/google";
+const inter = Inter({ subsets: ["latin"] });
+
 import { Header } from '@/app/components/header.tsx';
 
 export default function RootLayout({children}: {children: React.ReactNode; }) {
 	return (
-		<html lang="en">
-			<body>
+		<html lang="en" className="min-h-screen">
+			<body className={"min-h-screen flex flex-col justify-between bg-base-100 " + inter.className}>
 				<Header />
 				{children}
 			</body>
