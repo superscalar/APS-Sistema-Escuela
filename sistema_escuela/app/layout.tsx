@@ -9,7 +9,10 @@ export default function RootLayout({children}: {children: React.ReactNode; }) {
 		<html lang="en" className="min-h-screen">
 			<body className={"min-h-screen flex flex-col justify-between bg-base-100 " + inter.className}>
 				<Header />
-				{children}
+
+				<main className="grow">
+					{children}
+				</main>
 
 				<footer className="footer-center">
 					<h6>Escuela X - Sistema interno</h6>

@@ -5,7 +5,7 @@ export function Header() {
 	// console.log(userCookies);
 	const userType = (userCookies.get("clase-usuario") == undefined)
 			? ""
-			: userCookies.get("clase-usuario").value;
+			: '(' + userCookies.get("clase-usuario").value + ')';
 	let userClass = "Usted no ha iniciado sesión";
 
 	 switch(userType) {
@@ -22,12 +22,12 @@ export function Header() {
 			userClass = "Alumno";
 			break;
 		default:
-			userClass = " - Usted no ha iniciado sesión - " + userType;
+			userClass = "Usted no ha iniciado sesión" + " " + userType;
 	}
 
 	return (
 		<header className="pb-2 border-b border-black">
-			<section className="mt-4 ml-4">
+			<section className="mt-2 ml-2">
 				<h1>Escuela X</h1>
 				<h3>{userClass}</h3>
 			</section>

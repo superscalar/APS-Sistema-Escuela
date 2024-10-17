@@ -10,7 +10,7 @@ export default function Page() {
 					<fieldset>
 						<legend>Nombre de usuario</legend>
 						<label style={{display: "none"}} htmlFor="username">Nombre de usuario</label>
-						<input className="input input-bordered w-full max-w-xs"
+						<input required className="input input-bordered w-full max-w-xs"
 							   type="text" name="username" placeholder="..." id="usernameInput" />
 						
 					</fieldset>
@@ -20,8 +20,7 @@ export default function Page() {
 					<fieldset>
 						<legend>Contraseña</legend>
 						<label style={{display: "none"}} htmlFor="password">Contraseña</label>
-						<input
-							className="input input-bordered w-full max-w-xs"
+						<input required className="input input-bordered w-full max-w-xs"
 							type="password" name="password" placeholder="********" id="passwordInput" />
 					</fieldset>
 
