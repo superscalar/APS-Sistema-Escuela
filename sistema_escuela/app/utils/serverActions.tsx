@@ -18,8 +18,8 @@ export async function authenticate(formData: FormData) {
 	// console.log(formData);
 	console.log(`Username[${formData.get("username")}] -> Password[${formData.get("password")}]`);
 
-	let username = formData.get("username");
-	let password = formData.get("password");
+	let username = formData.get("username") as string;
+	let password = formData.get("password") as string;
 
 	// query DB
 	// bcrypt.compare

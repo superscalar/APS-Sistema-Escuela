@@ -2,7 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
-import { Header } from '@/app/components/header.tsx';
+import { Header } from '@/app/components/header';
 
 export default function RootLayout({children}: {children: React.ReactNode; }) {
 	return (
