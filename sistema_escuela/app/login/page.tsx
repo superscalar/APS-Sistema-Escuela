@@ -11,7 +11,7 @@ export default function Page() {
 						<legend>Nombre de usuario</legend>
 						<label style={{display: "none"}} htmlFor="username">Nombre de usuario</label>
 						<input required className="input input-bordered w-full max-w-xs"
-							   type="text" name="username" placeholder="..." id="usernameInput" />
+							   type="text" name="username" placeholder="" id="usernameInput" />
 						
 					</fieldset>
 

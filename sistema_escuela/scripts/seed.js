@@ -41,6 +41,59 @@ async function createUsersTable(client) {
 	console.log("\n");
 }
 
+// Create User (Alta)
+async function createUser(client, type, username, password) {
+    console.log("Creating a new user...");
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    await client.sql`INSERT INTO escuela.usuarios (type, username, password) VALUES (${type}, ${username}, ${hashedPassword}) ON CONFLICT (username) DO NOTHING;`;
+    console.log("User created");
+}
+
+// Delete User (Baja)
+async function deleteUser(client, userId) {
+    console.log("Deleting user...");
+    await client.sql`DELETE FROM escuela.usuarios WHERE id = ${userId};`;
+    console.log("User deleted");
+}
+
+// Update User (Modificación)
+async function updateUserType(client, userId, newType){
+	console.log("Updating user type...");
+	await client.sql`UPDATE escuela.usuarios SET type = ${newType} WHERE id = ${userId};`;
+	console.log("User type updated");
+}
+
+async function updateUsername(client, userId, newUsername){
+	console.log("Updating username...");
+	await client.sql`UPDATE escuela.usuarios SET username = ${newUsername} WHERE id = ${userId} ON CONFLICT (username) DO NOTHING;`;
+	console.log("Username updated");
+}
+
+async function updatePassword(client, userId, newPassword){
+	console.log("Updating password...");
+	const saltRounds = 10;
+	const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+	await client.sql`UPDATE escuela.usuarios SET password = ${hashedPassword} WHERE id = ${userId};`;
+	console.log("Password updated");
+}
+
+async function insertUsers(client) {
+	console.log("--------------------------------");
+	console.log("Inserting users");
+  
+	for (const user of seed_data.users) {
+	  const hashedPassword = await bcrypt.hash(user.password, 10);
+	  await client.sql`
+		INSERT INTO escuela.usuarios (type, username, password)
+		VALUES (${user.type}, ${user.username}, ${hashedPassword});
+	  `;
+	}
+  
+	console.log("Users inserted");
+	client.release();
+  }
+
 /*
 async function createProducts(client) {	
 	console.log("--------------------------------");
@@ -134,9 +187,10 @@ async function createComments(client) {
 
 const main = async () => {
 	const client = await db.connect();
-	
+
 	await createDB(client);
 	await createAdministrators(client);
+	await insertUsers(client);
 	/*
 	await createProducts(client);
 	await createDeletedProductsTable(client);
