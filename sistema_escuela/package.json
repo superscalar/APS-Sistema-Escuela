@@ -7,9 +7,11 @@
     "seed": "node scripts/seed.js"
   },
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@vercel/postgres": "^0.10.0",
     "autoprefixer": "^10.4.20",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "daisyui": "^4.12.13",
     "next": "latest",
     "postcss": "^8.4.47",

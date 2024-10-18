@@ -1,12 +1,16 @@
 'use server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { compare }  from 'bcryptjs';
+import { fetchUserByName } from '@/app/utils/queries'
+import { redirectByUserType } from '@/app/utils/types';
 
 export async function logOut(formData: FormData) {
 	const cookieStore = cookies();
 	cookieStore.delete('id-usuario');
 	cookieStore.delete('clase-usuario');
 	cookieStore.delete('nombre-usuario');
+	redirect('/login');
 }
 
 export async function authenticate(formData: FormData) {
@@ -14,9 +18,8 @@ export async function authenticate(formData: FormData) {
 	// console.log(formData);
 	console.log(`Username[${formData.get("username")}] -> Password[${formData.get("password")}]`);
 
-	// later: change this so it doesn't pick a default value if it's empty
-	let username = (formData.get("username") == '') ? "default_user" : formData.get("username");
-	let password = (formData.get("password") == '') ? "default_password" : formData.get("password");
+	let username = formData.get("username");
+	let password = formData.get("password");
 
 	// query DB
 	// bcrypt.compare
@@ -24,13 +27,26 @@ export async function authenticate(formData: FormData) {
 	//    else: keep the old cookies, redirect to /login or show an error message
 	// research useFormState for this
 	
-	cookieStore.delete('id-usuario');
-	cookieStore.delete('clase-usuario');
-	cookieStore.delete('nombre-usuario');
+	let user = await fetchUserByName(username);
+	console.log(user);
+	
+	if (user == undefined) {
+		// for now, let's use this
+		throw new Error("Wrong credentials used");
+	}
+	
+	const validPassword = await compare(password, user.password);
+	if (validPassword) {
+		cookieStore.delete('id-usuario');
+		cookieStore.delete('clase-usuario');
+		cookieStore.delete('nombre-usuario');
 
-	cookieStore.set('id-usuario', 'USERID');
-	cookieStore.set('clase-usuario', 'alumno');
-	cookieStore.set('nombre-usuario', username);
+		cookieStore.set('id-usuario', user.id);
+		cookieStore.set('clase-usuario', user.user_type);
+		cookieStore.set('nombre-usuario', user.username);
+		redirect( redirectByUserType[user.user_type] );
+	} else {
+		redirect('/mistake');
+	}
 
-	redirect('/');
 }

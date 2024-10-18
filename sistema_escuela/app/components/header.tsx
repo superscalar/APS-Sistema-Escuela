@@ -12,8 +12,8 @@ export function Header() {
 	const displayUserType = (userType == '') ? '' : '(' + userType + ')';
 
 	 switch(userType) {
-		case 'directivo':
-			userClass = "Directivo";
+		case 'administrador':
+			userClass = "Administrador";
 			break;
 		case 'docente':
 			userClass = "Docente";
