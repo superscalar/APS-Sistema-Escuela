@@ -2,10 +2,10 @@ export type UserType = 'alumno' | 'docente' | 'padre' | 'administrador';
 
 // We receive this type from the database
 export type DatabaseUser = {
-	id: String,
+	id: string,
 	user_type: UserType,
-	username: String,
-	password: String
+	username: string,
+	password: string
 }
 
 // We don't want the bcrypt password to go around in the client side
