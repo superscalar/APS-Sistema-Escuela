@@ -1,57 +1,61 @@
-// TODO: check errors on return
-
+import { unstable_noStore as noStore } from 'next/cache';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { hash }  from 'bcryptjs';
 import type { UserType, DatabaseUser, User } from '@/app/utils/types';
 import { sql } from '@vercel/postgres';
 
 export async function fetchUserByID(userID: string): Promise<DatabaseUser> {
-	// if it's not there, the result seems to be undefined - check this and handle appropriately
-	let user = await sql`SELECT * FROM escuela.usuarios WHERE id = ${userID}`;
-	return user.rows[0] as DatabaseUser;
+	noStore();
+	try {
+		let user = await sql`SELECT * FROM escuela.usuarios WHERE id = ${userID}`;
+		return user.rows[0] as DatabaseUser;
+	} catch (err) {
+		console.log("Error when fetching user with ID " + userID + ": " + err);
+		throw new Error("Error when fetching user with ID " + userID + ": " + err);
+	}
 }
 
 export async function fetchUserByName(userName: string): Promise<DatabaseUser> {
-	// if it's not there, the result seems to be undefined - check this and handle appropriately
-	let user = await sql`SELECT * FROM escuela.usuarios WHERE username = ${userName}`
-	return user.rows[0] as DatabaseUser;
+	noStore();
+	try {
+		let user = await sql`SELECT * FROM escuela.usuarios WHERE username = ${userName}`;
+		return user.rows[0] as DatabaseUser;
+	} catch (err) {
+		console.log("Error when fetching user with name " + userName + ": " + err);
+		throw new Error("Error when fetching user with name " + userName + ": " + err);
+	}
 }
 
-// Create User (Alta)
-export async function createUser(userType: UserType, username: string, password: string) {
-    console.log("Creating a new user...");
-    const saltRounds = 10;
-    const hashedPassword = await hash(password, saltRounds);
-    await sql`INSERT INTO escuela.usuarios (user_type, username, password) VALUES (${userType}, ${username}, ${hashedPassword}) ON CONFLICT (username) DO NOTHING;`;
-    console.log("User created");
+export async function fetchStudents(): Promise<DatabaseUser[]> {
+	noStore();
+	try {
+		let students = await sql`SELECT * FROM escuela.usuarios WHERE user_type = 'alumno'`;
+		return students.rows as DatabaseUser[];
+	} catch (err) {
+		console.log("Error when fetching students: " + err);
+		throw new Error("Error when fetching students: " + err);
+	}
 }
 
-// Delete User (Baja)
-export async function deleteUser(userId: string) {
-    console.log("Deleting user...");
-    await sql`DELETE FROM escuela.usuarios WHERE id = ${userId};`;
-    console.log("User deleted");
+export async function fetchParents(): Promise<DatabaseUser[]> {
+	noStore();
+	try {
+		let parents = await sql`SELECT * FROM escuela.usuarios WHERE user_type = 'padre'`;
+		return parents.rows as DatabaseUser[];
+	} catch (err) {
+		console.log("Error when fetching parents: " + err);
+		throw new Error("Error when fetching parents: " + err);
+	}
 }
 
-// Update User (Modificación)
-export async function updateUserType(userId: string, newType: UserType){
-	console.log("Updating user type...");
-	await sql`UPDATE escuela.usuarios SET user_type = ${newType} WHERE id = ${userId};`;
-	console.log("User type updated");
-}
-
-export async function updateUsername(userId: string, newUsername: string){
-	console.log("Updating username...");
-	await sql`UPDATE escuela.usuarios SET username = ${newUsername} WHERE id = ${userId} ON CONFLICT (username) DO NOTHING;`;
-	console.log("Username updated");
-}
-
-export async function updatePassword(userId: string, newPassword: string){
-	console.log("Updating password...");
-	const saltRounds = 10;
-	const hashedPassword = await hash(newPassword, saltRounds);
-	await sql`UPDATE escuela.usuarios SET password = ${hashedPassword} WHERE id = ${userId};`;
-	console.log("Password updated");
+export async function fetchTeachers(): Promise<DatabaseUser[]> {
+	noStore();
+	try {
+		let teachers = await sql`SELECT * FROM escuela.usuarios WHERE user_type = 'docente'`;
+		return teachers.rows as DatabaseUser[];
+	} catch (err) {
+		console.log("Error when fetching teachers: " + err);
+		throw new Error("Error when fetching teachers: " + err);
+	}
 }
