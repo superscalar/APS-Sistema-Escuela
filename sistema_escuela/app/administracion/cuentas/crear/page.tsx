@@ -1,6 +1,10 @@
+'use client'; // later narrow this down to the component
+import { useSearchParams } from 'next/navigation'
+
 import Link from 'next/link';
 import { createUser, deleteUser, createUserFormAction } from '@/app/utils/serverActions';
 import { disableAfterOneClick } from '@/app/utils/clientUtils';
+import type { UserType } from '@/app/utils/types';
 
 function randomString(n: number) {
 	let alphabet = "abcdefghijklmnopqrstuvwxyz";
@@ -12,12 +16,11 @@ function randomString(n: number) {
 }
 
 export default async function Page() {
-	// small test
-	/* const randomName = randomString(20);
-	const randomPassword = randomString(20);
-	const id = await createUser('alumno', randomName, randomPassword);
-	console.log(id);
-	await deleteUser(id);*/
+	// if this page is visited as-is, then it doesn't matter
+	// but, for example, from /administracion/cuentas/docentes, a link to create a new teacher can
+	// redirect to /crear?tipo=docente, which sets the <select> to the correct type by default
+	const params = useSearchParams();
+	const defaultSelectedType = params.get('tipo') ?? 'alumno';
 
 	return (<section>
 		<h1>Crear una cuenta nueva:</h1>
@@ -25,9 +28,9 @@ export default async function Page() {
 			<label htmlFor="user_type">Tipo de usuario</label>
 			<select required className="input input-bordered w-full max-w-xs"
 				name="user_type" id="typeSelector">
-				<option>Alumno</option>
-				<option>Docente</option>
-				<option>Padre/Madre</option>
+				<option value='alumno' selected={defaultSelectedType == 'alumno'}>Alumno</option>
+				<option value='docente' selected={defaultSelectedType == 'docente'}>Docente</option>
+				<option value='padre' selected={defaultSelectedType == 'padre'}>Padre/Madre</option>
 			</select>
 
 			<div className="mt-4"></div>

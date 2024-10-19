@@ -10,6 +10,11 @@ export default async function Page() {
 	
 	return (<section>
 		<h1>Administración de cuentas de alumnos</h1>
+		<Link href={{
+			pathname: '/administracion/cuentas/crear',
+			query: {'tipo': 'alumno'}
+		}}> Crear nuevo alumno </Link>
+
 		<UsersTable users={allStudents} />
 	</section>);
 }
