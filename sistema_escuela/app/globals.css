@@ -3,9 +3,18 @@
 @tailwind utilities;
 
 h1,h2,h3,h4,h5,h6 { font-weight: bold; }
-h1 { font-size: 2rem; }
-h2 { font-size: 1.8rem; }
-h3 { font-size: 1.6rem; }
-h4 { font-size: 1.4rem; }
-h5 { font-size: 1.2rem; }
-h6 { font-size: 1rem; }
+
+:root {
+	--base-text-size: 0.8rem;
+}
+h1 { font-size: calc(2 * var(--base-text-size)); }
+h2 { font-size: calc(1.8 * var(--base-text-size)); }
+h3 { font-size: calc(1.6 * var(--base-text-size)); }
+h4 { font-size: calc(1.4 * var(--base-text-size)); }
+h5 { font-size: calc(1.2 * var(--base-text-size)); }
+h6 { font-size: var(--base-text-size); }
+
+a {
+	text-decoration: underline;
+	color: #900;
+}
