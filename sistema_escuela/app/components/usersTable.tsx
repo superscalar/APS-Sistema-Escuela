@@ -7,7 +7,6 @@ import { deleteUserAndRevalidate } from '@/app/utils/serverActions';
 import { usePathname } from 'next/navigation'
 
 function EditButton({user}:{user: User}) {
-	// pass in the user data to /editar via query parameter
 	return (<Link href={{
 			pathname: '/administracion/cuentas/editar',
 			query: { 'id': user.id, 'type': user.user_type, 'username': user.username }
@@ -22,7 +21,7 @@ function DeleteButton({user}: {user: User}) {
 	const deleteSpecificUserAction = deleteUserAndRevalidate.bind(null, user.id).bind(null, pathname);
 	
 	return (<form action={deleteSpecificUserAction}>
-		<button className="text-xl text-red-500">X</button>
+		<button className="text-xl font-extrabold text-red-500 border-b-2 border-black">X</button>
 	</form>);
 	
 }

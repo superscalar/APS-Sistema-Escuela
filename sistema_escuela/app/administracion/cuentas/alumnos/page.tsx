@@ -8,7 +8,7 @@ export default async function Page() {
 	let allStudents = await fetchStudents();
 	allStudents.forEach(student => delete student.password);
 	
-	return (<section>
+	return (<section className="mt-4 flex flex-col items-center justify-center">
 		<h1>Administración de cuentas de alumnos</h1>
 		<Link href={{
 			pathname: '/administracion/cuentas/crear',
@@ -16,5 +16,7 @@ export default async function Page() {
 		}}> Crear nuevo alumno </Link>
 
 		<UsersTable users={allStudents} />
+		
+		<Link href='/administracion/cuentas'> Volver </Link>
 	</section>);
 }

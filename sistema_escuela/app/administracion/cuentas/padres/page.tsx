@@ -8,13 +8,15 @@ export default async function Page() {
 	let allParents = await fetchParents();
 	allParents.forEach(parent => delete parent.password);
 	
-	return (<section>
+	return (<section className="mt-4 flex flex-col items-center justify-center">
 		<h1>Administración de cuentas de padres y madres</h1>
 		<Link href={{
 			pathname: '/administracion/cuentas/crear',
 			query: {'tipo': 'padre'}
 		}}> Crear nuevo padre/madre </Link>
 		
-		<UsersTable users={allParents} />		
+		<UsersTable users={allParents} />
+		
+		<Link href='/administracion/cuentas'> Volver </Link>
 	</section>);
 }

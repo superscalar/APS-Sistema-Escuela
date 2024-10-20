@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export default function Page() {
-	return (<section>
+	return (<section className="mt-4 flex flex-col items-center justify-center">
 		<h1>Administración de cuentas</h1>
 		<nav>
 			<ul className="list-disc list-inside">
