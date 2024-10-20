@@ -92,11 +92,11 @@ export async function createUserFormAction(formData: FormData) {
 }
 
 export async function editUserFormAction(formData: FormData) {
-	console.log(formData);
+	// console.log(formData);
 	// console.log(formData.get("newPassword"));
 	
 	let userWantsToChangePassword = !!(formData.get("newPassword") ?? false);
-	console.log("userWantsToChangePassword:", userWantsToChangePassword);
+	// console.log("userWantsToChangePassword:", userWantsToChangePassword);
 	
 	let userID = formData.get("id") as string;
 	let username = formData.get("username") as string;
