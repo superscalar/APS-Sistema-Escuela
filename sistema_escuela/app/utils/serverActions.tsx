@@ -40,15 +40,31 @@ export async function deleteUser(userId: string) {
 }
 
 // Update User (Modificación)
+export async function updateUserAttributes(userId: string, newName: string, newType: UserType) {
+	console.log("Updating user...");
+	console.log(`UPDATE escuela.usuarios SET user_type = ${newType}, username = ${newName} WHERE id = ${userId}`);
+	await sql`UPDATE escuela.usuarios SET user_type = ${newType}, username = ${newName} WHERE id = ${userId}`;
+	console.log("User updated");
+}
+
+export async function updateUserAttributesWithPassword(userId: string, newName: string, newType: UserType, newPassword: string) {
+	console.log("Updating user...");
+	const saltRounds = 10;
+	const hashedPassword = await hash(newPassword, saltRounds);
+	await sql`UPDATE escuela.usuarios SET user_type = ${newType}, username = ${newName}, password = ${hashedPassword} WHERE id = ${userId}`;
+	console.log("User updated");
+}
+
+
 export async function updateUserType(userId: string, newType: UserType){
 	console.log("Updating user type...");
-	await sql`UPDATE escuela.usuarios SET user_type = ${newType} WHERE id = ${userId};`;
+	await sql`UPDATE escuela.usuarios SET user_type = ${newType} WHERE id = ${userId}`;
 	console.log("User type updated");
 }
 
 export async function updateUsername(userId: string, newUsername: string){
 	console.log("Updating username...");
-	await sql`UPDATE escuela.usuarios SET username = ${newUsername} WHERE id = ${userId} ON CONFLICT (username) DO NOTHING;`;
+	await sql`UPDATE escuela.usuarios SET username = ${newUsername} WHERE id = ${userId} ON CONFLICT (username) DO NOTHING`;
 	console.log("Username updated");
 }
 
@@ -56,7 +72,7 @@ export async function updatePassword(userId: string, newPassword: string){
 	console.log("Updating password...");
 	const saltRounds = 10;
 	const hashedPassword = await hash(newPassword, saltRounds);
-	await sql`UPDATE escuela.usuarios SET password = ${hashedPassword} WHERE id = ${userId};`;
+	await sql`UPDATE escuela.usuarios SET password = ${hashedPassword} WHERE id = ${userId}`;
 	console.log("Password updated");
 }
 
@@ -70,6 +86,28 @@ export async function createUserFormAction(formData: FormData) {
 	
 	const createdUserID = await createUser(user_type, username, password);
 	console.log("Successfully created user with ID " + createdUserID);
+	
+	// await new Promise((resolve) => setTimeout(resolve, 3000)); // [DEBUG]
+	redirect('/administracion/cuentas');	
+}
+
+export async function editUserFormAction(formData: FormData) {
+	console.log(formData);
+	// console.log(formData.get("newPassword"));
+	
+	let userWantsToChangePassword = !!(formData.get("newPassword") ?? false);
+	console.log("userWantsToChangePassword:", userWantsToChangePassword);
+	
+	let userID = formData.get("id") as string;
+	let username = formData.get("username") as string;
+	let user_type = formData.get("user_type") as UserType;
+	let password = formData.get("password");
+	
+	if (userWantsToChangePassword) {
+		await updateUserAttributesWithPassword(userID, username, user_type, password);
+	} else {
+		await updateUserAttributes(userID, username, user_type);
+	}
 	
 	// await new Promise((resolve) => setTimeout(resolve, 3000)); // [DEBUG]
 	redirect('/administracion/cuentas');	
@@ -116,6 +154,7 @@ export async function authenticate(formData: FormData) {
 		cookieStore.set('nombre-usuario', user.username);
 		redirect( redirectByUserType[user.user_type] );
 	} else {
+		// switch to using useFormState
 		redirect('/mistake');
 	}
 

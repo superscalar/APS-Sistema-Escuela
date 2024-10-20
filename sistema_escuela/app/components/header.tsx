@@ -7,7 +7,7 @@ import clsx from 'clsx';
 export function Header() {
 	const userCookies = cookies();
 	// console.log(userCookies);
-	const hasLoggedIn: bool = (userCookies.get("clase-usuario") == undefined);
+	const hasLoggedIn: boolean = (userCookies.get("clase-usuario") == undefined);
 	
 	const userType = (userCookies.get("clase-usuario") == undefined)
 			? ""
