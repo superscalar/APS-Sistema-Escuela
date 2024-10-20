@@ -121,31 +121,22 @@ export async function logOut(formData: FormData) {
 	redirect('/login');
 }
 
-export async function authenticate(formData: FormData) {
+export async function authenticate(prevState: any, formData: FormData) {
 	const cookieStore = cookies();
 	// console.log(formData);
 	console.log(`Username[${formData.get("username")}] -> Password[${formData.get("password")}]`);
+	
+	// await new Promise((resolve) => setTimeout(resolve, 2000));
 
 	let username = formData.get("username") as string;
 	let password = formData.get("password") as string;
-
-	// query DB
-	// bcrypt.compare
-	// if successful, continue
-	//    else: keep the old cookies, redirect to /login or show an error message
-	// research useFormState for this
 	
 	let user = await fetchUserByName(username);
 	console.log(user);
 
-	let dialog = require('dialog');
-	
 	if (user == undefined) {
-		// for now, let's use this
-		//throw new Error("Wrong credentials used");
-		dialog.err("El usuario es incorrecto", "Login error");
-	}
-	else {
+		return { error: "La cuenta que ha indicado no existe" };
+	} else {
 		const validPassword = await compare(password, user.password);
 		if (validPassword) {
 			cookieStore.delete('id-usuario');
@@ -155,11 +146,10 @@ export async function authenticate(formData: FormData) {
 			cookieStore.set('id-usuario', user.id);
 			cookieStore.set('clase-usuario', user.user_type);
 			cookieStore.set('nombre-usuario', user.username);
+			
 			redirect( redirectByUserType[user.user_type] );
 		} else {
-			// switch to using useFormState
-			//redirect('/mistake');
-			dialog.err("La contrasenia es incorrecta", "Login error");
+			return { error: 'Credenciales incorrectas. Intentelo de nuevo ->' + Math.random().toString() };
 		}
 	}
 }
