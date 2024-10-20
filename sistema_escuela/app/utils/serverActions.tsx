@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { compare }  from 'bcryptjs';
 import { fetchUserByName } from '@/app/utils/queries'
 import { redirectByUserType } from '@/app/utils/types';
+import { revalidatePath } from 'next/cache';
 
 import { hash }  from 'bcryptjs';
 import { sql } from '@vercel/postgres';
@@ -22,6 +23,14 @@ export async function createUser(userType: UserType, username: string, password:
 	
 	return insertReturnValue.rows[0].id;
 }
+
+// bind to these parameters to use as a form action
+export async function deleteUserAndRevalidate(userId: string, path: string) {
+	await deleteUser(userId);
+	revalidatePath(path);
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Delete User (Baja)
 export async function deleteUser(userId: string) {
@@ -51,17 +60,18 @@ export async function updatePassword(userId: string, newPassword: string){
 	console.log("Password updated");
 }
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export async function createUserFormAction(formData: FormData) {
 	let username = formData.get("username") as string;
 	let password = formData.get("password") as string;
 	let user_type = formData.get("user_type") as UserType;
 	console.log("Creating " + user_type + " of name " + username + " and password " + password);
-	// const createdUserID = await createUser(user_type, username, password);
-	// console.log("Successfully created user with ID " + createdUserID);
 	
-	await new Promise((resolve) => setTimeout(resolve, 3000)); // [DEBUG]
+	const createdUserID = await createUser(user_type, username, password);
+	console.log("Successfully created user with ID " + createdUserID);
+	
+	// await new Promise((resolve) => setTimeout(resolve, 3000)); // [DEBUG]
 	redirect('/administracion/cuentas');	
 }
 
