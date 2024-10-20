@@ -6,9 +6,8 @@ export default function Page() {
 		<nav>
 			<ul className="list-disc list-inside">
 			
-				<li> <Link href="/administracion/cuentas/crear">Crear una nueva cuenta</Link> </li>
-				<br />
-			
+				<li className="mb-4"> <Link href="/administracion/cuentas/crear">Crear una nueva cuenta</Link> </li>
+							
 				<li> <Link href="/administracion/cuentas/docentes">Administrar cuentas de docentes</Link> </li>
 				<li> <Link href="/administracion/cuentas/alumnos">Administrar cuentas de alumnos</Link> </li>
 				<li> <Link href="/administracion/cuentas/padres">Administrar cuentas de padres y madres</Link> </li>
