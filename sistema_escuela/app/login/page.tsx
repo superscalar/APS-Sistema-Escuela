@@ -27,7 +27,8 @@ export default function Page() {
 					<div className="mt-4"></div>
 
 					<input className="btn btn-primary"
-						onClick={disableAfterOneClick} type="submit" value="Iniciar sesión" />
+						//onClick={disableAfterOneClick} 
+						type="submit" value="Iniciar sesión" />
 				</form>
 			</section>
 		</section> );
