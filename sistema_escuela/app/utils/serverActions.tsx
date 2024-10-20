@@ -149,7 +149,7 @@ export async function authenticate(prevState: any, formData: FormData) {
 			
 			redirect( redirectByUserType[user.user_type] );
 		} else {
-			return { error: 'Credenciales incorrectas. Intentelo de nuevo ->' + Math.random().toString() };
+			return { error: 'Credenciales incorrectas. Intentelo de nuevo' };
 		}
 	}
 }
