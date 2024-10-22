@@ -7,7 +7,7 @@ import clsx from 'clsx';
 export default function Page() {
 	const initialState = { message: "", error: undefined };
 	const [formState, checkAuth] = useFormState(authenticate, initialState);
-	const { pending } = useFormStatus();
+	
 	
 	return ( <section className="mt-2 flex content-center justify-center">
 			<section className="flex flex-col justify-center max-w-md border border-black p-4 rounded">
@@ -32,19 +32,27 @@ export default function Page() {
 
 					<div className="mt-4"></div>
 
-					<button disabled={pending} ariaDisabled={pending} className="block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed aria-disabled:opacity-50">
-						<p>Ingresar</p>
-					</button>
+					<LoginButton formState={formState} />
 				</form>
-				
-				<div className={clsx( { 'hidden': pending } )} id="form-error" aria-live="polite" aria-atomic="true">
-					{ formState.error &&
-						<div id="errorMessage" className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8">
-							<p className="font-bold text-red-500 text-center">{formState.error}</p>
-						</div>
-					}
-				</div>
-				
 			</section>
 		</section> );
+}
+
+function LoginButton({formState}) {
+	const { pending } = useFormStatus();
+	
+	return (<div>
+		<button disabled={pending} aria-disabled={pending} className="block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 active:bg-blue-600 aria-disabled:cursor-not-allowed aria-disabled:opacity-50">
+			<p>Ingresar</p>
+		</button>
+	
+		<div className={clsx( { 'hidden': pending } )} id="form-error" aria-live="polite" aria-atomic="true">
+			{ formState.error &&
+				<div id="errorMessage" className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8">
+					<p className="font-bold text-red-500 text-center">{formState.error}</p>
+				</div>
+			}
+		</div>
+	</div>);
+
 }
