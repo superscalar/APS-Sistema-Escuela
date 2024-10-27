@@ -55,6 +55,19 @@ async function insertUsers(client) {
 	client.release();
   }
 
+async function createCalificationsTable(client) {
+	console.log("--------------------------------");
+	console.log("Creating califications table");
+	await client.sql`CREATE TABLE IF NOT EXISTS escuela.calificaciones (
+		id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+		student_id UUID NOT NULL,
+		subject TEXT NOT NULL,
+		calification INT NOT NULL,
+		FOREIGN KEY (student_id) REFERENCES escuela.usuarios(id)
+	);`;
+	console.log("Califications table created");
+	console.log("--------------------------------");
+}
 
 const main = async () => {
 	const client = await db.connect();

@@ -4,5 +4,5 @@ module.exports = {
       { type: 'padre', username: 'padre', password: 'padre' },
       { type: 'alumno', username: 'alumno', password: 'alumno' },
       { type: 'docente', username: 'docente', password: 'docente' },
-    ],
+    ]
   };

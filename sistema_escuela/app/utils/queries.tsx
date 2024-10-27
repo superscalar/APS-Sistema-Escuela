@@ -59,3 +59,14 @@ export async function fetchTeachers(): Promise<DatabaseUser[]> {
 		throw new Error("Error when fetching teachers: " + err);
 	}
 }
+
+export async function fetchCalifications(): Promise<DatabaseUser[]> {
+	noStore();
+	try {
+		let califications = await sql`SELECT * FROM escuela.calificaciones`;
+		return califications.rows as DatabaseUser[];
+	} catch (err) {
+		console.log("Error when fetching califications: " + err);
+		throw new Error("Error when fetching califications: " + err);
+	}
+}
