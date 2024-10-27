@@ -55,9 +55,9 @@ async function insertUsers(client) {
 	client.release();
   }
 
-async function createCalificationsTable(client) {
+async function createGradesTable(client) {
 	console.log("--------------------------------");
-	console.log("Creating califications table");
+	console.log("Creating grades table");
 	await client.sql`CREATE TABLE IF NOT EXISTS escuela.calificaciones (
 		id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 		student_id UUID NOT NULL,
@@ -65,17 +65,36 @@ async function createCalificationsTable(client) {
 		calification INT NOT NULL,
 		FOREIGN KEY (student_id) REFERENCES escuela.usuarios(id)
 	);`;
-	console.log("Califications table created");
+	console.log("Grades table created");
 	console.log("--------------------------------");
 }
+
+async function insertGrades(client) {
+	console.log("--------------------------------");
+	console.log("Inserting grades");
+  
+	for (const grade of seed_data.grades) {
+	  await client.sql`
+		INSERT INTO escuela.calificaciones (student_id, subject, grade)
+		VALUES (${grade.student_id}, ${grade.subject}, ${grade.grade});
+	  `;
+	}
+  
+	console.log("Grades inserted");
+	client.release();
+  }
 
 const main = async () => {
 	const client = await db.connect();
 	console.log(client);
 
 	await createDB(client);
+
 	await createUsersTable(client);
 	await insertUsers(client);
+
+	await createCalificationsTable(client);
+	await insertGrades(client);
 	
 	await client.end(() => {console.log("Closing connection...");});
 }
