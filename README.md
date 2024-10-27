@@ -1,6 +1,6 @@
 ## (APS) Proyecto: Sistema integral web para escuelas privadas
 -----------------
 ### Estado actual:
-####  Sprint 2
-Entrega: Lunes 21/10
-Demo: Martes 22/10
+####  Sprint 3
+Entrega: Lunes 04/11
+Demo: Martes 05/11
