@@ -2,7 +2,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import type { UserType, DatabaseUser, User } from '@/app/utils/types';
+import type { UserType, DatabaseUser, User, ExamGrade } from '@/app/utils/types';
 import { sql } from '@vercel/postgres';
 
 export async function fetchUserByID(userID: string): Promise<DatabaseUser> {
@@ -60,11 +60,14 @@ export async function fetchTeachers(): Promise<DatabaseUser[]> {
 	}
 }
 
-export async function fetchCalifications(): Promise<DatabaseUser[]> {
+export async function fetchGrades(): Promise<ExamGrade[]> {
 	noStore();
 	try {
-		let califications = await sql`SELECT * FROM escuela.calificaciones`;
-		return califications.rows as DatabaseUser[];
+		let califications = await sql`
+			SELECT usuarios.id, name, subject, grade, signed
+			FROM escuela.calificaciones JOIN escuela.usuarios
+				 ON calificaciones.student_id = usuarios.id`;
+		return califications.rows as ExamGrade[];
 	} catch (err) {
 		console.log("Error when fetching califications: " + err);
 		throw new Error("Error when fetching califications: " + err);

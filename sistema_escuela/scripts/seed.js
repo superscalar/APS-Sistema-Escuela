@@ -19,6 +19,17 @@ async function createDB(client) {
 		$$;
 	`;
 	
+	console.log("Creating sanction type enum...");
+	await client.sql`
+		DO $$
+		BEGIN
+			IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'sanctiontype') THEN
+				CREATE TYPE sanctiontype AS ENUM ('sancion', 'amonestacion');
+			END IF;
+		END
+		$$;
+	`;
+	
 	console.log("Creating UUID extension...");
 	await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`;
 	
@@ -32,6 +43,7 @@ async function createUsersTable(client) {
 	await client.sql`CREATE TABLE IF NOT EXISTS escuela.usuarios (
 		id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 		user_type USERTYPE,
+		name TEXT NOT NULL,
 		username TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL
 	);`;
@@ -46,8 +58,8 @@ async function insertUsers(client) {
 	for (const user of seed_data.users) {
 	  const hashedPassword = await bcrypt.hash(user.password, 10);
 	  await client.sql`
-		INSERT INTO escuela.usuarios (user_type, username, password)
-		VALUES (${user.type}, ${user.username}, ${hashedPassword});
+		INSERT INTO escuela.usuarios (id, user_type, name, username, password)
+		VALUES (${user.UUID}, ${user.type}, ${user.name}, ${user.username}, ${hashedPassword});
 	  `;
 	}
   
@@ -62,7 +74,8 @@ async function createGradesTable(client) {
 		id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 		student_id UUID NOT NULL,
 		subject TEXT NOT NULL,
-		calification INT NOT NULL,
+		grade NUMERIC(4,1) NOT NULL,
+		signed BOOLEAN,
 		FOREIGN KEY (student_id) REFERENCES escuela.usuarios(id)
 	);`;
 	console.log("Grades table created");
@@ -75,8 +88,8 @@ async function insertGrades(client) {
   
 	for (const grade of seed_data.grades) {
 	  await client.sql`
-		INSERT INTO escuela.calificaciones (student_id, subject, grade)
-		VALUES (${grade.student_id}, ${grade.subject}, ${grade.grade});
+		INSERT INTO escuela.calificaciones (student_id, subject, grade, signed)
+	VALUES (${grade.student_id}, ${grade.subject}, ${grade.grade}, ${grade.signed});
 	  `;
 	}
   
@@ -86,14 +99,14 @@ async function insertGrades(client) {
 
 const main = async () => {
 	const client = await db.connect();
-	console.log(client);
+	// console.log(client);
 
 	await createDB(client);
 
 	await createUsersTable(client);
 	await insertUsers(client);
 
-	await createCalificationsTable(client);
+	await createGradesTable(client);
 	await insertGrades(client);
 	
 	await client.end(() => {console.log("Closing connection...");});
