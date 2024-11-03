@@ -73,3 +73,16 @@ export async function fetchGrades(): Promise<ExamGrade[]> {
 		throw new Error("Error when fetching califications: " + err);
 	}
 }
+
+export async function fetchGradesByStudent(student_id) {
+	noStore();
+	try {
+		let grades = await sql`SELECT usuarios.id, name, subject, grade, signed
+			FROM escuela.calificaciones JOIN escuela.usuarios
+				 ON calificaciones.student_id = usuarios.id
+				 WHERE calificaciones.student_id = ${student_id}`;
+		return grades.rows as ExamGrade[];
+	} catch (err) {
+		throw new Error("Error when fetching grades for student " + student_id + " | " + err);
+	}
+}

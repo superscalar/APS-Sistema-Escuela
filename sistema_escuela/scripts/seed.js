@@ -104,13 +104,33 @@ async function createAmonestacionesTable(client) {
 		student_id UUID NOT NULL,
 		sanctioner_id UUID NOT NULL,
 		reason TEXT NOT NULL,
-		date_issued DATE,
-		signed BOOLEAN,
+		date_issued TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+		signed BOOLEAN DEFAULT FALSE,
 		FOREIGN KEY (student_id) REFERENCES escuela.usuarios(id),
 		FOREIGN KEY (sanctioner_id) REFERENCES escuela.usuarios(id)
 	);`;
 	console.log("Amonestaciones table created");
 	console.log("--------------------------------");
+}
+
+async function createParentChildtable(client) {
+	/*
+	// PARENTCHILDRELATIONSHIP = 'biologico' | 'apoderado' (?)
+	
+	await client.sql`CREATE TABLE IF NOT EXISTS escuela.parentchild (
+		parent_id UUID NOT NULL,
+		student_id UUID NOT NULL,
+		type PARENTCHILDRELATIONSHIP DEFAULT 'biologico',
+		FOREIGN KEY (student_id ) REFERENCES escuela.usuarios(id),
+		FOREIGN KEY (student_id) REFERENCES escuela.usuarios(id)
+	);`; */
+	
+	await client.sql`CREATE TABLE IF NOT EXISTS escuela.parentchild (
+		parent_id UUID NOT NULL,
+		student_id UUID NOT NULL,
+		FOREIGN KEY (student_id ) REFERENCES escuela.usuarios(id),
+		FOREIGN KEY (student_id) REFERENCES escuela.usuarios(id)
+	);`;
 }
 
 const main = async () => {
@@ -129,6 +149,7 @@ const main = async () => {
 	await insertGrades(client);
 	
 	await createAmonestacionesTable(client);
+	await createParentChildtable(client);
 	
 	await client.end(() => {console.log("Closing connection...");});
 }
