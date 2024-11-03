@@ -84,6 +84,38 @@ export async function updatePassword(userId: string, newPassword: string){
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+export async function deleteGrade(gradeId: string) {
+    console.log("Deleting grade...");
+    await sql`DELETE FROM escuela.calificaciones WHERE id = ${gradeId};`;
+    console.log("Grade deleted");
+}
+
+export async function uploadGrade(studentID: string, subject: string, grade: number, signed: boolean) {
+	console.log("Uploading grade...");
+	await sql`
+		INSERT INTO escuela.calificaciones (student_id, subject, grade, signed)
+	VALUES (${studentID}, ${subject}, ${grade}, ${signed});
+	  `;
+	console.log("Grade uploaded");
+}
+
+export async function editGradeFormAction(formData: FormData) {	
+	let studentID = formData.get("id") as string;
+	let subject = formData.get("subject") as string;
+	let grade = formData.get("grade") as string;
+	let signed = formData.get("signed") as string;
+	
+	redirect('/docentes/calificaciones');	
+}
+
+export async function deleteSanction(sanctionId: string) {
+    console.log("Deleting sanction...");
+    await sql`DELETE FROM escuela.amonestaciones WHERE id = ${sanctionId};`;
+    console.log("Sanction deleted");
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 export async function createUserFormAction(formData: FormData) {
 	let name = formData.get("name") as string;
 	let username = formData.get("username") as string;
