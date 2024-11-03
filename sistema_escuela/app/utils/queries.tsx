@@ -66,7 +66,7 @@ export async function fetchGrades(): Promise<ExamGrade[]> {
 	noStore();
 	try {
 		let califications = await sql`
-			SELECT usuarios.id, name, subject, grade, signed
+			SELECT calificaciones.id as grade_id, usuarios.id as student_id, name, subject, grade, signed
 			FROM escuela.calificaciones JOIN escuela.usuarios
 				 ON calificaciones.student_id = usuarios.id`;
 		return califications.rows as ExamGrade[];
@@ -79,7 +79,7 @@ export async function fetchGrades(): Promise<ExamGrade[]> {
 export async function fetchGradesByStudent(student_id) {
 	noStore();
 	try {
-		let grades = await sql`SELECT usuarios.id, name, subject, grade, signed
+		let grades = await sql`SELECT calificaciones.id as grade_id, usuarios.id as student_id, name, subject, grade, signed
 			FROM escuela.calificaciones JOIN escuela.usuarios
 				 ON calificaciones.student_id = usuarios.id
 				 WHERE calificaciones.student_id = ${student_id}`;

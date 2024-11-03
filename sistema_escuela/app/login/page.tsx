@@ -1,14 +1,13 @@
 'use client';
 import { authenticate } from '@/app/utils/serverActions';
 import { useFormState, useFormStatus } from 'react-dom';
-// import { useActionState } from 'react';
+import { useActionState } from 'react';
 import clsx from 'clsx';
 
 export default function Page() {
 	const initialState = { message: "", error: undefined };
-	const [formState, checkAuth] = useFormState(authenticate, initialState);
-	
-	
+	const [formState, checkAuth] = useActionState(authenticate, initialState);
+		
 	return ( <section className="mt-2 flex content-center justify-center">
 			<section className="flex flex-col justify-center max-w-md border border-black p-4 rounded">
 				<h2 className="font-bold text-xl mb-4" >Inicio de sesión</h2>

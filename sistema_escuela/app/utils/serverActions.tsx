@@ -154,7 +154,7 @@ export async function editUserFormAction(formData: FormData) {
 }
 
 export async function logOut(formData: FormData) {
-	const cookieStore = cookies();
+	const cookieStore = await cookies();
 	cookieStore.delete('id-usuario');
 	cookieStore.delete('clase-usuario');
 	cookieStore.delete('nombre-usuario');
@@ -163,7 +163,7 @@ export async function logOut(formData: FormData) {
 }
 
 export async function authenticate(prevState: any, formData: FormData) {
-	const cookieStore = cookies();
+	const cookieStore = await cookies();
 	// console.log(formData);
 	console.log(`Username[${formData.get("username")}] -> Password[${formData.get("password")}]`);
 	

@@ -4,8 +4,8 @@ import { logOut } from '@/app/utils/serverActions'
 import Link from 'next/link';
 import clsx from 'clsx';
 
-export function Header() {
-	const userCookies = cookies();
+export async function Header() {
+	const userCookies = await cookies();
 	// console.log(userCookies);
 	const hasLoggedIn: boolean = (userCookies.get("clase-usuario") == undefined);
 	

@@ -1,10 +1,13 @@
-import Link from 'next/link';
+// 'use client';
+// import { useCookies } from 'next-client-cookies';
 import { cookies } from 'next/headers';
+
+import Link from 'next/link';
 import { fetchGradesByStudent } from '@/app/utils/queries';
-import GradesTable from '@/app/components/gradesTable';
+import { GradesTable } from '@/app/components/gradesTable';
 
 export default async function Page() {
-	const userCookies = cookies();
+	const userCookies = await cookies();
 	const studentID = userCookies.get("id-usuario").value;
 	const calificaciones = await fetchGradesByStudent(studentID);
 	

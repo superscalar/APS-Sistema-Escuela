@@ -26,6 +26,7 @@ export function DBUsersToUsers(users: DatabaseUser[]): User[] {
 }
 
 export type ExamGrade = {
+	grade_id: string
 	student_id: string,
 	name: string,
 	subject: string,
