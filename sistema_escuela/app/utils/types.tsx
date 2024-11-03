@@ -1,5 +1,14 @@
 export type UserType = 'alumno' | 'docente' | 'padre' | 'administrador';
 
+export type Amonestacion = {
+	id: string,
+	sanction_type: 'amonestacion' | 'sancion',
+	alumno_id: string,
+	sanctioner_id: string,
+	reason: string,
+	date: string, 
+}
+
 // We receive this type from the database
 export type DatabaseUser = {
 	id: string,
@@ -11,6 +20,10 @@ export type DatabaseUser = {
 
 // We don't want the bcrypt password to go around in the client side
 export type User = Omit<DatabaseUser, 'password'>;
+
+export function DBUsersToUsers(users: DatabaseUser[]): User[] {
+	users.forEach(u => delete u['password']);
+}
 
 export type ExamGrade = {
 	student_id: string,

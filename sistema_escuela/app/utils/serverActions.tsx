@@ -11,12 +11,12 @@ import { sql } from '@vercel/postgres';
 import type { UserType, User } from '@/app/utils/types';
 
 // Create User (Alta)
-export async function createUser(userType: UserType, username: string, password: string) {
+export async function createUser(userType: UserType, name: string, username: string, password: string) {
     console.log("Creating a new user...");
     const saltRounds = 10;
     const hashedPassword = await hash(password, saltRounds);
-    const insertReturnValue = await sql`INSERT INTO escuela.usuarios (user_type, username, password)
-										VALUES (${userType}, ${username}, ${hashedPassword})
+    const insertReturnValue = await sql`INSERT INTO escuela.usuarios (user_type, name, username, password)
+										VALUES (${userType}, ${name}, ${username}, ${hashedPassword})
 										ON CONFLICT (username) DO NOTHING
 										RETURNING id;`;
     console.log("User created");
@@ -40,18 +40,18 @@ export async function deleteUser(userId: string) {
 }
 
 // Update User (Modificación)
-export async function updateUserAttributes(userId: string, newName: string, newType: UserType) {
+export async function updateUserAttributes(userId: string, newName: string, newUsername: string, newType: UserType) {
 	console.log("Updating user...");
-	console.log(`UPDATE escuela.usuarios SET user_type = ${newType}, username = ${newName} WHERE id = ${userId}`);
-	await sql`UPDATE escuela.usuarios SET user_type = ${newType}, username = ${newName} WHERE id = ${userId}`;
+	console.log(`UPDATE escuela.usuarios SET user_type = ${newType}, name = ${newName}, username = ${newUsername} WHERE id = ${userId}`);
+	await sql`UPDATE escuela.usuarios SET user_type = ${newType}, name = ${newName}, username = ${newUsername} WHERE id = ${userId}`;
 	console.log("User updated");
 }
 
-export async function updateUserAttributesWithPassword(userId: string, newName: string, newType: UserType, newPassword: string) {
+export async function updateUserAttributesWithPassword(userId: string, newName: string, newUsername: string, newType: UserType, newPassword: string) {
 	console.log("Updating user...");
 	const saltRounds = 10;
 	const hashedPassword = await hash(newPassword, saltRounds);
-	await sql`UPDATE escuela.usuarios SET user_type = ${newType}, username = ${newName}, password = ${hashedPassword} WHERE id = ${userId}`;
+	await sql`UPDATE escuela.usuarios SET user_type = ${newType}, name = ${newName}, username = ${newName}, password = ${hashedPassword} WHERE id = ${userId}`;
 	console.log("User updated");
 }
 
@@ -60,6 +60,12 @@ export async function updateUserType(userId: string, newType: UserType){
 	console.log("Updating user type...");
 	await sql`UPDATE escuela.usuarios SET user_type = ${newType} WHERE id = ${userId}`;
 	console.log("User type updated");
+}
+
+export async function updateName(userId: string, newName: string){
+	console.log("Updating full name...");
+	await sql`UPDATE escuela.usuarios SET name = ${newName} WHERE id = ${userId} ON CONFLICT (name) DO NOTHING`;
+	console.log("Username updated");
 }
 
 export async function updateUsername(userId: string, newUsername: string){
@@ -79,13 +85,14 @@ export async function updatePassword(userId: string, newPassword: string){
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export async function createUserFormAction(formData: FormData) {
+	let name = formData.get("name") as string;
 	let username = formData.get("username") as string;
 	let password = formData.get("password") as string;
 	let user_type = formData.get("user_type") as UserType;
-	console.log("Creating " + user_type + " of name " + username + " and password " + password);
+	console.log("Creating " + user_type + " " + name + " of username " + username + " and password " + password);
 	
-	const createdUserID = await createUser(user_type, username, password);
-	console.log("Successfully created user with ID " + createdUserID);
+	const createdUserID = await createUser(user_type, name, username, password);
+	console.log("Successfully created user " + name + " with ID " + createdUserID);
 	
 	// await new Promise((resolve) => setTimeout(resolve, 3000)); // [DEBUG]
 	redirect('/administracion/cuentas');	
@@ -99,14 +106,15 @@ export async function editUserFormAction(formData: FormData) {
 	// console.log("userWantsToChangePassword:", userWantsToChangePassword);
 	
 	let userID = formData.get("id") as string;
+	let name = formData.get("name") as string;
 	let username = formData.get("username") as string;
 	let user_type = formData.get("user_type") as UserType;
 	let password = formData.get("password");
 	
 	if (userWantsToChangePassword) {
-		await updateUserAttributesWithPassword(userID, username, user_type, password);
+		await updateUserAttributesWithPassword(userID, name, username, user_type, password);
 	} else {
-		await updateUserAttributes(userID, username, user_type);
+		await updateUserAttributes(userID, name, username, user_type);
 	}
 	
 	// await new Promise((resolve) => setTimeout(resolve, 3000)); // [DEBUG]
@@ -118,6 +126,7 @@ export async function logOut(formData: FormData) {
 	cookieStore.delete('id-usuario');
 	cookieStore.delete('clase-usuario');
 	cookieStore.delete('nombre-usuario');
+	cookieStore.delete('nombre-completo');
 	redirect('/login');
 }
 
@@ -142,8 +151,10 @@ export async function authenticate(prevState: any, formData: FormData) {
 			cookieStore.delete('id-usuario');
 			cookieStore.delete('clase-usuario');
 			cookieStore.delete('nombre-usuario');
+			cookieStore.delete('nombre-completo');
 
 			cookieStore.set('id-usuario', user.id);
+			cookieStore.set('nombre-completo', user.name);
 			cookieStore.set('clase-usuario', user.user_type);
 			cookieStore.set('nombre-usuario', user.username);
 			

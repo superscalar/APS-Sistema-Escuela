@@ -64,7 +64,6 @@ async function insertUsers(client) {
 	}
   
 	console.log("Users inserted");
-	client.release();
   }
 
 async function createGradesTable(client) {
@@ -94,12 +93,32 @@ async function insertGrades(client) {
 	}
   
 	console.log("Grades inserted");
-	client.release();
-  }
+}
+
+async function createAmonestacionesTable(client) {
+	console.log("--------------------------------");
+	console.log("Creating amonestaciones table");
+	await client.sql`CREATE TABLE IF NOT EXISTS escuela.amonestaciones (
+		id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+		type SANCTIONTYPE,
+		student_id UUID NOT NULL,
+		sanctioner_id UUID NOT NULL,
+		reason TEXT NOT NULL,
+		date_issued DATE,
+		signed BOOLEAN,
+		FOREIGN KEY (student_id) REFERENCES escuela.usuarios(id),
+		FOREIGN KEY (sanctioner_id) REFERENCES escuela.usuarios(id)
+	);`;
+	console.log("Amonestaciones table created");
+	console.log("--------------------------------");
+}
 
 const main = async () => {
 	const client = await db.connect();
 	// console.log(client);
+	
+	// later, set "on conflict do nothing" on the inserts
+	// await client.sql`drop schema escuela cascade`;
 
 	await createDB(client);
 
@@ -108,6 +127,8 @@ const main = async () => {
 
 	await createGradesTable(client);
 	await insertGrades(client);
+	
+	await createAmonestacionesTable(client);
 	
 	await client.end(() => {console.log("Closing connection...");});
 }
