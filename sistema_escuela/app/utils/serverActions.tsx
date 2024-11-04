@@ -114,6 +114,22 @@ export async function deleteSanction(sanctionId: string) {
     console.log("Sanction deleted");
 }
 
+export async function uploadSanction(formData: FormData) {
+	console.log("Uploading sanction...");
+	let studentID = formData.get("studentID") as string;
+	let sanctionerID = formData.get("sanctionerID") as string;
+	let sanctionType = formData.get("sanctionType") as string;
+	let reason = formData.get("reason") as string;
+	
+	await sql`
+		INSERT INTO escuela.amonestaciones (student_id, sanctioner_id, type, reason)
+	VALUES (${studentID}, ${sanctionerID}, ${sanctionType}, ${reason});
+	  `;
+	console.log("Sanction uploaded");
+
+	redirect('/amonestaciones');
+}
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export async function createUserFormAction(formData: FormData) {

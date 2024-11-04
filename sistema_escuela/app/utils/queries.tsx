@@ -4,7 +4,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import type { UserType, DatabaseUser, User, ExamGrade } from '@/app/utils/types';
+import type { UserType, DatabaseUser, User, ExamGrade, Amonestacion } from '@/app/utils/types';
 import { sql } from '@vercel/postgres';
 
 export async function fetchUserByID(userID: string): Promise<DatabaseUser> {
@@ -86,5 +86,17 @@ export async function fetchGradesByStudent(student_id) {
 		return grades.rows as ExamGrade[];
 	} catch (err) {
 		throw new Error("Error when fetching grades for student " + student_id + " | " + err);
+	}
+}
+
+export async function fetchSanctions(): Promise<Amonestacion[]> {
+	noStore();
+	try {
+		let sanciones = await sql`
+			SELECT amonestaciones.id as id, amonestaciones.type as sanction_type, student_id as alumno_id, sanctioner_id, reason, amonestaciones.date_issued as date FROM escuela.amonestaciones`;
+		return sanciones.rows as Amonestacion[];
+	} catch (err) {
+		console.log("Error when fetching sanciones: " + err);
+		throw new Error("Error when fetching sanciones: " + err);
 	}
 }
