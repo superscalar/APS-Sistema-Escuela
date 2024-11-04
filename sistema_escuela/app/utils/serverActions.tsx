@@ -84,6 +84,15 @@ export async function updatePassword(userId: string, newPassword: string){
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+export async function signGrade(gradeId: string) {
+	console.log("Signing grade...");
+	await sql`UPDATE escuela.calificaciones SET signed = true WHERE id = ${gradeId}`;
+	
+	// for now, this will only be called from that path, so it's fine to do this
+	// later, add a new arg and bind the current path to it
+	revalidate('/padres/calificaciones');
+}
+
 export async function deleteGrade(gradeId: string) {
     console.log("Deleting grade...");
     await sql`DELETE FROM escuela.calificaciones WHERE id = ${gradeId};`;
@@ -99,13 +108,64 @@ export async function uploadGrade(studentID: string, subject: string, grade: num
 	console.log("Grade uploaded");
 }
 
+async function getStudentIDByName(name: string) {
+	const student = await sql`SELECT id from escuela.usuarios where name = ${name}`;
+	return student.rows[0];
+}
+
+async function uploadGradesInBulk(grades) {
+	// console.log("uploadGradesInBulk: ", grades);
+	const SQL_values = grades.map(g => "('" + g.id + "', '" + g.subject.trim() + "', " + parseFloat(g.grade.trim()) + ", " + g.signed.trim() + ")").join(",");
+	// console.log("uploadGradesInBulk: ", SQL_values);
+	console.log(`INSERT INTO escuela.calificaciones (student_id, subject, grade, signed) VALUES ${SQL_values}`);
+	const query = "INSERT INTO escuela.calificaciones (student_id, subject, grade, signed) VALUES " + SQL_values;
+	try {
+		// https://stackoverflow.com/questions/77093626/vercel-postgres-bulk-insert-building-sql-query-dynamically-from-array
+		await sql.query(query, null);
+	} catch (err) {
+		console.log("Error when uploading bulk grades" + err);
+		throw new Error("Error when uploading bulk grades" + err);
+	}
+}
+
+import Papa from 'papaparse';
+
+export async function uploadGradesAsCSV(formData: FormData) {
+	// console.log(formData);
+	// console.log(formData.get("grades_csv"));
+	const csv_file = formData.get("grades_csv");
+	if (csv_file.name == "undefined" && csv_file.size == 0) { return }
+	
+	const csv_text = await csv_file.text();
+	const parsed = Papa.parse(csv_text, {
+		header: true,
+		complete: async (results) => {
+			// console.log(results);
+			const gradesByID = await Promise.all(results.data.map(async (grade) => {
+				const id = await getStudentIDByName(grade.name);
+				// console.log("Got id: ", id);
+				grade.id = id.id;
+				return grade
+			}));
+			
+			await uploadGradesInBulk(gradesByID);
+		}
+	});
+	
+	revalidatePath('/docencia/calificaciones');
+}
+
 export async function editGradeFormAction(formData: FormData) {	
-	let studentID = formData.get("id") as string;
+	let grade_id = formData.get("grade_id") as string;
+	let student_id = formData.get("student_id") as string;
 	let subject = formData.get("subject") as string;
 	let grade = formData.get("grade") as string;
 	let signed = formData.get("signed") as string;
 	
-	redirect('/docentes/calificaciones');	
+	// console.log(`UPDATE escuela.calificaciones SET subject = ${subject}, grade = ${grade}, signed = ${signed} WHERE calificaciones.id = ${grade_id}`)
+	await sql`UPDATE escuela.calificaciones SET subject = ${subject}, grade = ${grade}, signed = ${signed} WHERE calificaciones.id = ${grade_id}`;
+	revalidatePath('/docencia/calificaciones');
+	redirect('/docencia/calificaciones');
 }
 
 export async function deleteSanction(sanctionId: string) {

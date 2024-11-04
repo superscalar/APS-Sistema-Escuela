@@ -8,27 +8,21 @@ import type { ExamGrade } from '@/app/utils/types';
 
 export default function Page() {	
 	const params = useSearchParams();
-	const gradeID = params.get('id') ?? "NO-ID?";
+	const gradeID = params.get('gradeID') ?? "NO-ID?";
+	const name = params.get('student_name') ?? "";
+	const student_id = params.get('student_id') ?? "";
 	const subject = params.get('subject') ?? "";
 	const grade = params.get('grade') ?? "";
     const signed = params.get('signed') ?? "";
 
-    const [calificaciones, setCalificaciones] = useState<ExamGrade[]>([]);
-
 	return ( <section className="mt-2 flex content-center justify-center">
 		<section className="flex flex-col justify-center max-w-md border border-black p-4 rounded">
-			<h1>Editar calificacion:</h1>
+			<h3>Editar calificación del alumno {name} de la materia {subject}</h3>
 			<p> ID: { gradeID } </p>
 			<form action={editGradeFormAction} className="flex flex-col">
-				<input type="hidden" name="id" value={gradeID} />
+				<input type="hidden" name="grade_id" value={gradeID} />
+				<input type="hidden" name="student_id" value={student_id} />
 
-				<div className="mt-4"></div>
-
-                <label htmlFor="studentID">ID de alumno</label>
-				<input required className="input input-bordered w-full max-w-xs"
-					   type="text" name="studentID" defaultValue={subject} id="studentIDInput" />
-				<div className="mt-4"></div>
-				
 				<label htmlFor="subject">Materia</label>
 				<input required className="input input-bordered w-full max-w-xs"
 					   type="text" name="subject" defaultValue={subject} id="subjectInput" />
@@ -40,8 +34,7 @@ export default function Page() {
 				<div className="mt-4"></div>
 
                 <label htmlFor="signed">Firmado</label>
-				<input required className="input input-bordered w-full max-w-xs"
-					   type="text" name="signed" defaultValue={signed} id="signedInput" />
+				<input type="checkbox" name="signed" defaultChecked={signed == "true" ? true : false} id="signedInput" />
 				<div className="mt-4"></div>
 
 				<SubmitButton />

@@ -11,7 +11,7 @@ export default function Page() {
           </div>
         </Link>
 		
-		<Link href="#" className="bg-gray-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+		<Link href="/padres/calificaciones" className="bg-blue-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
           <div className="flex items-center justify-center">
             Calificaciones
           </div>
@@ -29,7 +29,7 @@ export default function Page() {
           </div>
         </Link>
 
-		<Link href="#" className="bg-gray-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+		<Link href="/padres/amonestaciones" className="bg-blue-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
           <div className="flex items-center justify-center">
             Amonestaciones y sanciones
           </div>

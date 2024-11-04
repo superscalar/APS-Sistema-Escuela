@@ -89,6 +89,21 @@ export async function fetchGradesByStudent(student_id) {
 	}
 }
 
+export async function fetchGradesByStudentOfParent(parent_id) {
+	// for now, just a copy of fetchGrades to make it work
+	noStore();
+	try {
+		let califications = await sql`
+			SELECT calificaciones.id as grade_id, usuarios.id as student_id, name, subject, grade, signed
+			FROM escuela.calificaciones JOIN escuela.usuarios
+				 ON calificaciones.student_id = usuarios.id`;
+		return califications.rows as ExamGrade[];
+	} catch (err) {
+		console.log("Error when fetching califications: " + err);
+		throw new Error("Error when fetching califications: " + err);
+	}
+}
+
 export async function fetchSanctions(): Promise<Amonestacion[]> {
 	noStore();
 	try {
