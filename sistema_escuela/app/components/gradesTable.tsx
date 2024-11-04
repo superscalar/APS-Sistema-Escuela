@@ -1,10 +1,7 @@
-// import { useCookies } from 'next-client-cookies';
-import { cookies } from 'next/headers';
-
 import Link from 'next/link';
 import { EditIcon } from '@/app/components/icons';
 import type { ExamGrade } from '@/app/utils/types';
-import clsx from 'clsx';
+import { deleteGrade } from '@/app/utils/serverActions';
 
 function EditButton({grade_id}) {
 	return (<Link href={{
@@ -16,18 +13,27 @@ function EditButton({grade_id}) {
 }
 
 // add a delete confirmation check later
-function DeleteButton() {
-	return (
-		<button className="text-xl font-extrabold text-red-500 border-b-2 border-black">X</button>
-	);
-}
+function DeleteButton({grade_id}) {
+    const handleSubmit = async (event: React.FormEvent) => {
+      event.preventDefault(); // Evita que el formulario se envíe de forma predeterminada
+      try {
+        await deleteGrade(grade_id); 
+      } 
+      catch (error) {
+        console.error("Error al eliminar la sanción:", error);
+      }
+    };
+  
+    return (
+      <form onSubmit={handleSubmit}> 
+        <button type="submit" className="text-xl font-extrabold text-red-500 border-b-2 border-black">
+          X
+        </button>
+      </form>
+    );
+  }
 
-export async function GradesTable({calificaciones}: { calificaciones: ExamGrade[]; }) {
-	const userCookies = await cookies();
-	const user_type = userCookies.get("clase-usuario");
-	console.log(">> " + user_type + " <<");
-	const isTeacher = user_type == 'docente';
-
+  export function GradesTable({calificaciones}: { calificaciones: ExamGrade[]; }) {
 	return (
 		<table className="table table-zebra table-auto w-full">
 			<thead>
@@ -36,20 +42,16 @@ export async function GradesTable({calificaciones}: { calificaciones: ExamGrade[
 				<th className="px-4 py-2">Materia</th>
 				<th className="px-4 py-2">Calificación</th>
 				<th className="px-4 py-2">Firmado</th>
-				<th className={clsx({'hidden': !isTeacher})}>Editar</th>
-				<th className={clsx({'hidden': !isTeacher})}>Eliminar</th>
 			  </tr>
 			</thead>
 			<tbody>
-				
-			  {calificaciones.map((alumno, index) => (
-				<tr key={index}>
-					<td className="border px-4 py-2">{alumno.name}</td>
-					<td className="border px-4 py-2">{alumno.subject}</td>
-					<td className="border px-4 py-2">{alumno.grade}</td>
-					<td className="border px-4 py-2">{alumno.signed ? "Firmado!" : "Sin firmar"}</td>
-					<td className={clsx({'hidden': !isTeacher})}> <EditButton grade_id={alumno.grade_id} /> </td>
-					<td className={clsx({'hidden': !isTeacher})}> <DeleteButton grade_id={alumno.grade_id} /> </td>
+			  {calificaciones.map(cal => (<tr key={cal.grade_id}>
+					<td className="border px-4 py-2">{cal.name}</td>
+					<td className="border px-4 py-2">{cal.subject}</td>
+					<td className="border px-4 py-2">{cal.grade}</td>
+					<td className="border px-4 py-2">{cal.signed ? "Firmado!" : "Sin firmar"}</td>
+					<td> <EditButton grade_id={cal.grade_id}/> </td>
+					<td> <DeleteButton grade_id={cal.grade_id}/> </td>
 				</tr>
 			  ))}
 			</tbody>
