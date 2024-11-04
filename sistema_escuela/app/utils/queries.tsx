@@ -93,7 +93,11 @@ export async function fetchSanctions(): Promise<Amonestacion[]> {
 	noStore();
 	try {
 		let sanciones = await sql`
-			SELECT amonestaciones.id as id, amonestaciones.type as sanction_type, student_id as alumno_id, sanctioner_id, reason, amonestaciones.date_issued as date FROM escuela.amonestaciones`;
+			SELECT amonestaciones.id as id, amonestaciones.type as sanction_type,
+				   amonestaciones.student_id, usuarios.name as student_name,
+				   usuarios.username, sanctioner_id, reason, amonestaciones.date_issued
+				FROM escuela.amonestaciones JOIN escuela.usuarios
+					ON amonestaciones.student_id = usuarios.id`;
 		return sanciones.rows as Amonestacion[];
 	} catch (err) {
 		console.log("Error when fetching sanciones: " + err);

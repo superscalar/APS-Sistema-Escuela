@@ -1,7 +1,11 @@
+'use client';
+import { useCookies } from 'next-client-cookies';
+
 import Link from 'next/link';
 import { EditIcon } from '@/app/components/icons';
 import type { ExamGrade } from '@/app/utils/types';
 import { deleteGrade } from '@/app/utils/serverActions';
+import clsx from 'clsx';
 
 function EditButton({grade_id}) {
 	return (<Link href={{
@@ -13,19 +17,10 @@ function EditButton({grade_id}) {
 }
 
 // add a delete confirmation check later
-function DeleteButton({grade_id}) {
-    const handleSubmit = async (event: React.FormEvent) => {
-      event.preventDefault(); // Evita que el formulario se envíe de forma predeterminada
-      try {
-        await deleteGrade(grade_id); 
-      } 
-      catch (error) {
-        console.error("Error al eliminar la sanción:", error);
-      }
-    };
-  
+function DeleteButton({grade_id}) {	
+	const deleteGradeWithBoundParams = deleteGrade.bind(null, grade_id);
     return (
-      <form onSubmit={handleSubmit}> 
+      <form action={deleteGradeWithBoundParams}> 
         <button type="submit" className="text-xl font-extrabold text-red-500 border-b-2 border-black">
           X
         </button>
@@ -34,6 +29,11 @@ function DeleteButton({grade_id}) {
   }
 
   export function GradesTable({calificaciones}: { calificaciones: ExamGrade[]; }) {
+	const userCookies = await cookies();
+	const user_type = userCookies.get("clase-usuario") ?? 'alumno';
+	const isTeacher = user_type == 'docente';
+	const isParent  = user_type == 'padre';
+	
 	return (
 		<table className="table table-zebra table-auto w-full">
 			<thead>
@@ -42,6 +42,9 @@ function DeleteButton({grade_id}) {
 				<th className="px-4 py-2">Materia</th>
 				<th className="px-4 py-2">Calificación</th>
 				<th className="px-4 py-2">Firmado</th>
+				<th className={clsx({'hidden': !isTeacher})}>Editar</th>
+				<th className={clsx({'hidden': !isTeacher})}>Eliminar</th>
+				<th className={clsx({'hidden': !isParent})}>{/* Firmar */}</th>
 			  </tr>
 			</thead>
 			<tbody>
@@ -50,8 +53,9 @@ function DeleteButton({grade_id}) {
 					<td className="border px-4 py-2">{cal.subject}</td>
 					<td className="border px-4 py-2">{cal.grade}</td>
 					<td className="border px-4 py-2">{cal.signed ? "Firmado!" : "Sin firmar"}</td>
-					<td> <EditButton grade_id={cal.grade_id}/> </td>
-					<td> <DeleteButton grade_id={cal.grade_id}/> </td>
+					<td className={clsx({'hidden': !isTeacher})}> <EditButton grade_id={cal.grade_id}/> </td>
+					<td className={clsx({'hidden': !isTeacher})}> <DeleteButton grade_id={cal.grade_id}/> </td>
+					<td className={clsx({'hidden': (!isParent && !cal.signed) })}> Firmar </td>
 				</tr>
 			  ))}
 			</tbody>

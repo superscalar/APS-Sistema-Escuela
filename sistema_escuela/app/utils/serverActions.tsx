@@ -117,9 +117,13 @@ export async function deleteSanction(sanctionId: string) {
 export async function uploadSanction(formData: FormData) {
 	console.log("Uploading sanction...");
 	let studentID = formData.get("studentID") as string;
+	let sanctionerType = formData.get("sanctionerType") as string;
 	let sanctionerID = formData.get("sanctionerID") as string;
 	let sanctionType = formData.get("sanctionType") as string;
 	let reason = formData.get("reason") as string;
+	
+	console.log(`[DEBUG] INSERT INTO escuela.amonestaciones (student_id, sanctioner_id, type, reason)
+	VALUES (${studentID}, ${sanctionerID}, ${sanctionType}, ${reason});`);
 	
 	await sql`
 		INSERT INTO escuela.amonestaciones (student_id, sanctioner_id, type, reason)
@@ -127,7 +131,9 @@ export async function uploadSanction(formData: FormData) {
 	  `;
 	console.log("Sanction uploaded");
 
-	redirect('/amonestaciones');
+	const target = sanctionerType ? (redirectByUserType[sanctionerType] + '/amonestaciones') : '/';
+	console.log("[DEBUG] Redirect to: " + target);
+	redirect(target);
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
