@@ -97,6 +97,7 @@ export async function deleteGrade(gradeId: string) {
     console.log("Deleting grade...");
     await sql`DELETE FROM escuela.calificaciones WHERE id = ${gradeId};`;
     console.log("Grade deleted");
+	revalidatePath('/docencia/calificaciones');
 }
 
 export async function uploadGrade(studentID: string, subject: string, grade: number, signed: boolean) {
