@@ -11,12 +11,12 @@ export default async function Page() {
       <h1 className="text-2xl font-bold mb-4">Calificaciones de Alumnos</h1>
 
       {/* Campo de búsqueda */}
-      <input
+      {/* <input
         type="text"
 		disabled
         placeholder="Buscar por ID del alumno"
         className="mb-4 p-2 border border-gray-300 rounded"
-      />
+      /> */}
 	  
 	  <form action={uploadGradesAsCSV}>
 		  {/* Botón para cargar notas desde un archivo */}
