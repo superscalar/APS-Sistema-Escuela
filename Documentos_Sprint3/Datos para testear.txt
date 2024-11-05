@@ -1,0 +1,37 @@
+# Cuentas de usuario:
+
+## Alumnos:
+Usuario: alumno
+Contraseña: alumno
+
+Usuario: mariag
+Contraseña: alumno
+
+Usuario: juanc
+Contraseña: alumno
+
+Usuario: sanchez
+Contraseña: alumno
+
+Usuario: ana
+Contraseña: alumno
+
+-------------------
+
+## Docentes:
+Usuario: docente
+Contraseña: docente
+
+-------------------
+
+## Administracion:
+Usuario: admin
+Contraseña: admin
+
+-------------------
+
+## Padres y madres:
+Usuario: padre
+Contraseña: padre
+
+-----------------
