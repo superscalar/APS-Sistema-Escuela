@@ -93,11 +93,12 @@ export async function signGrade(gradeId: string) {
 	revalidate('/padres/calificaciones');
 }
 
-export async function deleteGrade(gradeId: string) {
+export async function deleteGrade(gradeId: string, user_type: string) {
     console.log("Deleting grade...");
     await sql`DELETE FROM escuela.calificaciones WHERE id = ${gradeId};`;
     console.log("Grade deleted");
-	revalidatePath('/docencia/calificaciones');
+	
+	revalidatePath(redirectByUserType[user_type] + '/calificaciones');
 }
 
 export async function uploadGrade(studentID: string, subject: string, grade: number, signed: boolean) {
@@ -169,10 +170,14 @@ export async function editGradeFormAction(formData: FormData) {
 	redirect('/docencia/calificaciones');
 }
 
-export async function deleteSanction(sanctionId: string) {
+export async function deleteSanction(sanctionId: string, user_type: string) {
+	console.log(sanctionId);
     console.log("Deleting sanction...");
     await sql`DELETE FROM escuela.amonestaciones WHERE id = ${sanctionId};`;
     console.log("Sanction deleted");
+	
+	console.log("deleteSanction]", redirectByUserType[user_type] + '/calificaciones');
+	revalidatePath(redirectByUserType[user_type] + '/calificaciones');
 }
 
 export async function uploadSanction(formData: FormData) {

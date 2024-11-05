@@ -4,8 +4,8 @@ import { deleteSanction } from '@/app/utils/serverActions';
 import { fetchUserByID } from '@/app/utils/queries';
 
 // add a delete confirmation check later
-function DeleteButton({ a }: { a: Amonestacion }) {
-	const deleteSanctionWithBoundArgs = deleteSanction.bind(null, a.id);
+function DeleteButton({ a, user_type }: { a: Amonestacion; user_type: string }) {
+	const deleteSanctionWithBoundArgs = deleteSanction.bind(null, a.id).bind(null, user_type);
     return (
 		<form action={deleteSanctionWithBoundArgs}> 
 			<button type="submit" className="text-xl font-extrabold text-red-500 border-b-2 border-black">
@@ -15,7 +15,7 @@ function DeleteButton({ a }: { a: Amonestacion }) {
 	);
 }
 
-export function SanctionsTable({sanction}: { sanction: Amonestacion[]; }) {
+export function SanctionsTable({sanction, user_type}: { sanction: Amonestacion[]; user_type: string }) {
 	return (<div className="border border-black w-fit h-fit">
 		<table className="table table-zebra w-fit">
 			<thead>
@@ -33,7 +33,7 @@ export function SanctionsTable({sanction}: { sanction: Amonestacion[]; }) {
 						<td> {s.username} </td>
 						<td> {s.sanction_type} </td>
 						<td> {s.reason} </td>
-						<td> <DeleteButton a={s} /> </td>
+						<td> <DeleteButton a={s} user_type={user_type} /> </td>
 					</tr>)
 				}
 			</tbody>
