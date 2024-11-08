@@ -21,6 +21,7 @@ export function SanctionsTable({sanction, user_type}: { sanction: Amonestacion[]
 			<thead>
 			<tr>
 				<td> Estudiante </td>
+				<td> Nombre de usuario </td>
 				<td> Tipo </td>
 				<td> Motivo </td>
 			</tr>
@@ -31,7 +32,7 @@ export function SanctionsTable({sanction, user_type}: { sanction: Amonestacion[]
 					<tr key={s.id}>
 						<td> {s.student_name} </td>
 						<td> {s.username} </td>
-						<td> {s.sanction_type} </td>
+						<td> {s.sanction_type == 'sancion' ? "Sanción" : "Amonestación"} </td>
 						<td> {s.reason} </td>
 						<td> <DeleteButton a={s} user_type={user_type} /> </td>
 					</tr>)

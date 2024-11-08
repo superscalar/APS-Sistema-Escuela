@@ -14,7 +14,7 @@ export default async function Page() {
 		<h1>Amonestaciones y sanciones</h1>
 
         <Link href='/docencia/amonestaciones/crear' className="mb-4 ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            Cargar nuevo apercibimiento
+            Crear nueva amonestación/sanción
         </Link>
 		
 		<Suspense fallback={<SuspenseTable />}>
